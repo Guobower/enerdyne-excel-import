@@ -58,7 +58,7 @@ class LineImport(models.TransientModel):
                 pa_line_id = PurchaseReqLine.create({
                     'requisition_id': active_id,
                     'product_id': product_id.id,
-                    'product_uom': product_id.uom_po_id.id,
+                    'product_uom_id': product_id.uom_po_id.id,
                     'product_qty': 1,
                 })
                 pa_line_id.product_qty = int(line[1])
