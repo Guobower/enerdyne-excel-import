@@ -18,6 +18,7 @@ Import line of SO/PO/DO/Invoice/Inventory Adjustment from Excel file
         'views/invoice_view.xml',
         'views/picking_view.xml',
         'views/inventory_adjustment_view.xml',
+        'views/purchase_tender_view.xml'
     ],     
 
     "price": 49.00,

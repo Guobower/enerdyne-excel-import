@@ -4,9 +4,9 @@
         <record model="ir.ui.view" id="sky_purchase_requisition_import">
             <field name="name">purchase.requisition.import.inherit</field>
             <field name="model">purchase.requisition</field>
-            <field name="inherit_id" ref="purchase.purchase_requisition_form"/>
+            <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form"/>
             <field name="arch" type="xml">
-                <field name="order_line" position="before">
+                <field name="line_ids" position="before">
                     <button name="%(action_product_import)d" string="Import excel" groups="excel_line_import.group_import_excel" type="action" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                 </field>
             </field>
