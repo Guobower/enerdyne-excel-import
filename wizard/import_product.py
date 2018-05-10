@@ -50,6 +50,19 @@ class LineImport(models.TransientModel):
                 po_line_id.onchange_product_id()
                 po_line_id.product_qty = int(line[1])
 
+        # Ravi Krishnan - purchase requisition
+        if active_model == 'purchase.requisition':
+            PurchaseReqLine = self.env['purchase.requisition.line']
+            for line in data_list:
+                product_id = Product.search([('name','=',line[0])],limit=1)
+                pa_line_id = PurchaseReqLine.create({
+                    'requisition_id': active_id,
+                    'product_id': product_id.id,
+                    'product_uom': product_id.uom_po_id.id,
+                    'product_qty': 1,
+                })
+                pa_line_id.product_qty = int(line[1])
+
         # Chuyen kho
         if active_model == 'stock.picking':        
             picking = self.env['stock.picking'].browse(active_id)
