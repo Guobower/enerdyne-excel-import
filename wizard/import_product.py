@@ -4,6 +4,7 @@ from odoo import api, fields, models, _
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import itertools
 from datetime import datetime
+from odoo.osv import osv
 
 try:
     import xlrd
@@ -53,15 +54,24 @@ class LineImport(models.TransientModel):
         # Ravi Krishnan - purchase requisition
         if active_model == 'purchase.requisition':
             PurchaseReqLine = self.env['purchase.requisition.line']
+            i = 0
+            s = ''
             for line in data_list:
+                i = i + 1
                 product_id = Product.search([('name','=',line[0])],limit=1)
-                pa_line_id = PurchaseReqLine.create({
-                    'requisition_id': active_id,
-                    'product_id': product_id.id,
-                    'product_uom_id': product_id.uom_po_id.id,
-                    'product_qty': 1,
-                })
-                pa_line_id.product_qty = int(line[1])
+                if product_id:
+                    pa_line_id = PurchaseReqLine.create({
+                        'requisition_id': active_id,
+                        'product_id': product_id.id,
+                        'product_uom_id': product_id.uom_po_id.id,
+                        'product_qty': 1,
+                    })
+                    pa_line_id.product_qty = int(line[1])
+                else:
+                    s += str(i)
+                #    s += ','
+            if not s:        
+                raise osv.except_osv(('Error Condition'), ('Error Description'))    
 
         # Chuyen kho
         if active_model == 'stock.picking':        
