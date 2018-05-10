@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="sky_invoice_supplier_form">
+            <field name="name">account.invoice.supplier.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_supplier_form"/>
+            <field name="arch" type="xml">
+                <field name="invoice_line_ids" position="before">
+                    <button name="%(action_product_import)d" string="Import excel" groups="excel_line_import.group_import_excel" type="action" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                </field>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="sky_invoice_form">
+            <field name="name">account.invoice.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <field name="invoice_line_ids" position="before">
+                    <button name="%(action_product_import)d" string="Import excel" groups="excel_line_import.group_import_excel" type="action" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                </field>
+            </field>
+        </record>
+
+    </data>
+</odoo>
