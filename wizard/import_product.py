@@ -5,6 +5,8 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import itertools
 from datetime import datetime
 from odoo.osv import osv
+import logging
+_logger = logging.getLogger(__name__)
 
 try:
     import xlrd
@@ -37,19 +39,33 @@ class LineImport(models.TransientModel):
         # Ravi Krishnan - change default_code to name
         if active_model == 'purchase.order':
             PurchaseLine = self.env['purchase.order.line']
+            i = 0
+            s = ''
             for line in data_list:
+                i = i + 1
+                _logger.debug("item checking = : %r", i)
+
                 product_id = Product.search([('name','=',line[0])],limit=1)
-                po_line_id = PurchaseLine.create({
-                    'order_id': active_id,
-                    'name': product_id.name,
-                    'product_id': product_id.id,
-                    'product_uom': product_id.uom_po_id.id,
-                    'price_unit': 0,
-                    'product_qty': 1,
-                    'date_planned': datetime.today().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                })
-                po_line_id.onchange_product_id()
-                po_line_id.product_qty = int(line[1])
+                if product_id:
+                    po_line_id = PurchaseLine.create({
+                        'order_id': active_id,
+                        'name': product_id.name,
+                        'product_id': product_id.id,
+                        'product_uom': product_id.uom_po_id.id,
+                        'price_unit': 0,
+                        'product_qty': 1,
+                        'date_planned': datetime.today().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+                    })
+                    po_line_id.onchange_product_id()
+                    po_line_id.product_qty = int(line[1])
+                else:
+                    _logger.debug("item not found checking = : %r", i)
+                    s = s + " - " + str(i) 
+                    _logger.debug("s is having value = :" + s)
+
+            if s:        
+                raise osv.except_osv(('Import of Excel File Failed'), ('Check Item on line(s) ' + s))    
+                        
 
         # Ravi Krishnan - purchase requisition
         if active_model == 'purchase.requisition':
@@ -58,6 +74,8 @@ class LineImport(models.TransientModel):
             s = ''
             for line in data_list:
                 i = i + 1
+                _logger.debug("item checking = : %r", i)
+                
                 product_id = Product.search([('name','=',line[0])],limit=1)
                 if product_id:
                     pa_line_id = PurchaseReqLine.create({
@@ -68,10 +86,12 @@ class LineImport(models.TransientModel):
                     })
                     pa_line_id.product_qty = int(line[1])
                 else:
-                    s += str(i)
-                #    s += ','
-            if not s:        
-                raise osv.except_osv(('Error Condition'), ('Error Description'))    
+                    _logger.debug("item not found checking = : %r", i)
+                    s = s + " - " + str(i) 
+                    _logger.debug("s is having value = :" + s)
+
+            if s:        
+                raise osv.except_osv(('Import of Excel File Failed'), ('Check Item on line(s) ' + s))    
 
         # Chuyen kho
         if active_model == 'stock.picking':        
